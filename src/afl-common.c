@@ -23,8 +23,10 @@
 
  */
 
+#include <bits/time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "forkserver.h"
 #ifndef _GNU_SOURCE
   #define _GNU_SOURCE
@@ -924,12 +926,15 @@ void read_bitmap(u8 *fname, u8 *map, size_t len) {
 
 u64 get_cur_time(void) {
 
-  struct timeval  tv;
-  struct timezone tz;
+  struct timespec ts;
 
-  gettimeofday(&tv, &tz);
+  #ifdef CLOCK_MONOTONIC_COARSE
+  clock_gettime(CLOCK_MONOTONIC_COARSE, &ts);
+  #else
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  #endif
 
-  return (tv.tv_sec * 1000ULL) + (tv.tv_usec / 1000);
+  return (ts.tv_sec * 1000ULL) + (ts.tv_nsec / 1000000);
 
 }
 
@@ -937,12 +942,15 @@ u64 get_cur_time(void) {
 
 u64 get_cur_time_us(void) {
 
-  struct timeval  tv;
-  struct timezone tz;
+  struct timespec ts;
 
-  gettimeofday(&tv, &tz);
+  #ifdef CLOCK_MONOTONIC_COARSE
+  clock_gettime(CLOCK_MONOTONIC_COARSE, &ts);
+  #else
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  #endif
 
-  return (tv.tv_sec * 1000000ULL) + tv.tv_usec;
+  return (ts.tv_sec * 1000000ULL) + (ts.tv_nsec / 1000);
 
 }
 
